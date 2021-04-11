@@ -1,3 +1,45 @@
+;;; tmtxt-async-tasks.el --- An library for Emacs to execute command asynchronously -*- lexical-binding: t -*-
+
+;; Author: Trần Xuân Trường
+;; Maintainer: Trần Xuân Trường
+;; Version: 0.1
+;; Package-Requires: ()
+;; Homepage: https://truongtx.me/tmtxt-async-tasks.html
+;; Keywords: asynchronously, shell
+
+
+;; This file is not part of GNU Emacs
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; For a full copy of the GNU General Public License
+;; see <http://www.gnu.org/licenses/>.
+
+
+;;; Commentary:
+
+;; This is a new emacs package that I’ve just finished. This is not a very
+;; complicated extension or something very new. This is just the code I
+;; extracted from my previous emacs’ extension tmtxt-dired-async. The purpose of
+;; tmtxt-async-tasks is to provide emacs users a tool for executing shell
+;; command asynchronously in a separate window and not be affected by the
+;; process. When you executing a command using this package, a new window will
+;; be created at the bottom of the current frame (this window is not affected by
+;; the other-window command). The shell command keep running and print out the
+;; result for you to keep track of the process and the window contains that
+;; command can be automatically closed after a specified time period when it
+;; finish executing.
+
+;;; Code:
+
 (defvar tat/window-close-delay
   "5" "The time to show the result window after the async process finish execution, measured in second. This is a string, so if you change this value, please set it as a string.")
 
@@ -106,3 +148,4 @@
 	(setq tat/buffers-list ())))
 
 (provide 'tmtxt-async-tasks)
+;;; tmtxt-async-tasks.el ends here
