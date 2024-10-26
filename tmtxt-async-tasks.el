@@ -82,32 +82,61 @@
 				   nil 'kill-buffer current-async-buffer))))
 
 (defun tat/execute-async (command command-name)
-  "Execute the async shell command.
-	command: the command to execute
-	command-name: just the name for the output buffer
-	handler-function: the function for handling process
-	arguments: the arguments for passing into handler-function
-	handler function must have one argument, that is the process of the the async task
+  (let* ((window-before-execute (selected-window))
+         (output-buffer
+	  (concat "*" command-name "*" " at " (current-time-string)))
+         cmd-process
+         (cmd-split (split-string command " "))
+         (cmd (car cmd-split))
+         (args (cdr cmd-split)))
 
-	Create a new window at the bottom, execute the command and print
-	the output to that window. After finish execution, print the message to that
-	window and close it after x seconds"
-  (let ((window-before-execute (selected-window))
-		(output-buffer
-		 (concat "*" command-name "*" " at " (current-time-string))))
+    ;; run async command
+    (setq cmd-process
+          (apply 'start-process
+                 (append `(,command-name ,output-buffer ,cmd)
+                         args)))
 
-	;; make a new window
-	(select-window (tat/create-window))
-	;; not allow popup
-	(add-to-list 'same-window-buffer-names output-buffer)
-	;; run async command
-	(async-shell-command command output-buffer)
-	;; set event handler for the async process
-	(set-process-sentinel (get-buffer-process output-buffer) 'tat/close-window-handler)
-	;; add the new async buffer to the buffer list
-	(add-to-list 'tat/buffers-list output-buffer)
-	;; switch the the previous window
-	(select-window window-before-execute)))
+
+    ;; make a new window
+    (select-window (tat/create-window))
+    (switch-to-buffer output-buffer t t)
+    ;; not allow popup
+    (add-to-list 'same-window-buffer-names output-buffer)
+
+    ;; set event handler for the async process
+    (set-process-sentinel cmd-process 'tat/close-window-handler)
+    ;; add the new async buffer to the buffer list
+    (add-to-list 'tat/buffers-list output-buffer)
+    ;; switch the the previous window
+    (select-window window-before-execute)))
+
+;; (defun tat/execute-async (command command-name)
+;;   "Execute the async shell command.
+;; 	command: the command to execute
+;; 	command-name: just the name for the output buffer
+;; 	handler-function: the function for handling process
+;; 	arguments: the arguments for passing into handler-function
+;; 	handler function must have one argument, that is the process of the the async task
+
+;; 	Create a new window at the bottom, execute the command and print
+;; 	the output to that window. After finish execution, print the message to that
+;; 	window and close it after x seconds"
+;;   (let ((window-before-execute (selected-window))
+;; 		(output-buffer
+;; 		 (concat "*" command-name "*" " at " (current-time-string))))
+
+;; 	;; make a new window
+;; 	(select-window (tat/create-window))
+;; 	;; not allow popup
+;; 	(add-to-list 'same-window-buffer-names output-buffer)
+;; 	;; run async command
+;; 	(async-shell-command command output-buffer)
+;; 	;; set event handler for the async process
+;; 	(set-process-sentinel (get-buffer-process output-buffer) 'tat/close-window-handler)
+;; 	;; add the new async buffer to the buffer list
+;; 	(add-to-list 'tat/buffers-list output-buffer)
+;; 	;; switch the the previous window
+;; 	(select-window window-before-execute)))
 
 (defun tat/close-window-handler (process event)
   "Close the window"
